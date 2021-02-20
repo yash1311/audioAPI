@@ -127,6 +127,14 @@ class BasicTests(unittest.TestCase):
         response = self.app.post('/audiometa',data=json.dumps(da),content_type='application/json')
         self.assertEqual(response.status_code, 400) 
 
+    def test_create_fail6(self):
+        Datetime=datetime.now()
+        da={"audioFileType": "Song", "audioFileMetadata": {"Id":"12123232004",
+                                                        "songName":"I wanna grow old with you 4."
+                                                            }           ######## "songDuration" required field is missing ###########
+            }
+        response = self.app.post('/audiometa',data=json.dumps(da),content_type='application/json')
+        self.assertEqual(response.status_code, 400) 
 #################################################################
 ################       QUERY          ###########################
     def test_query_song_success(self):

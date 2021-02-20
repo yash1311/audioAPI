@@ -5,12 +5,11 @@ It contains the definition of routes and views for the application.
 
 # Import the required libraries
 
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 from flask_mongoengine import MongoEngine
 from mongoengine import *
 import json
 from bson.json_util import dumps
-from flask import jsonify, request
 from datetime import datetime
 
 app = Flask(__name__)
@@ -37,80 +36,38 @@ audiotypeList=['Song','Podcast','Audiobook']
 ## Defining document to store song metadata
 class Song(db.Document):
     # defineing varables 
-    Id = db.IntField(min_value = 0, unique=True, Required=True)
-    songName = db.StringField(unique=True,max_length = 100, Required = True)
-    songDuration = db.IntField(min_value = 0, Required=True)
-    songUpload = db.DateTimeField(default=datetime.now, Required=True)
+    Id = db.IntField(min_value = 0, unique=True, required=True)
+    songName = db.StringField(unique=True,max_length = 100, required = True)
+    songDuration = db.IntField(min_value = 0, required=True)
+    songUpload = db.DateTimeField(default=datetime.now, required=True)
 
-    def json(self):
-        song_dict = {
-                        "Id": self.Id,
-                        "songName": self.songName,
-                        "songDuration": self.songDuration,
-                        "songUpload": self.songUpload
-                      }
-        return json.dumps(song_dict)
-    
-    meta = {
-             "indexes": ["Id"],
-             "ordering" :["-date_created"]
-             }
 
 ## Defining document to store podcast metadata
 class Podcast(db.Document):
-    Id = db.IntField(min_value = 0,unique = True, Required = True)
-    podcastName = db.StringField(unique = True, max_length = 100, Required = True)
-    podcastDuration = db.IntField(min_value = 0, Required = True)
-    podcastUpload = db.DateTimeField(default = datetime.now, Required = True)
-    podcastHost = db.StringField(Required = True, max_length = 100)
-    podcastParticipants = db.ListField(db.StringField(unique = True, max_length = 100),max_length = 10, Required = False)
+    Id = db.IntField(min_value = 0,unique = True, required = True)
+    podcastName = db.StringField(unique = True, max_length = 100, required = True)
+    podcastDuration = db.IntField(min_value = 0, required = True)
+    podcastUpload = db.DateTimeField(default = datetime.now, required = True)
+    podcastHost = db.StringField(required = True, max_length = 100)
+    podcastParticipants = db.ListField(db.StringField(unique = True, max_length = 100),max_length = 10, required = False)
 
-    def json(self):
-        podcast_dict = {
-                            "Id": self.Id,
-                            "podcastName": self.podcastName,
-                            "podcastDuration": self.podcastDuration,
-                            "podcastUpload": self.podcastUpload,
-                            "podcastHost" : self.podcastHost,
-                            "podcastParticipants" : self.podcastParticipants
-                        }
-        return json.dumps(podcast_dict)
-    
-    meta = {
-            "indexes": ["Id"],
-            "ordering" :["-date_created"]
-            }
+
 
 ## Definining document to store Audiobook metadata
 class Audiobook(db.Document):
-    Id = db.IntField(min_value = 0,unique = True, Required = True)
-    audiobookName = db.StringField(unique = True, max_length = 100, Required = True)
-    audiobookAuthor = db.StringField(Required = True, max_length = 100)
-    audiobookUpload = db.DateTimeField(default = datetime.now, Required = True)
-    audiobookNarrator = db.StringField(Required = True, max_length = 100)
-    audiobookDuration = db.IntField(min_value = 0, Required = True)
+    Id = db.IntField(min_value = 0,unique = True, required = True)
+    audiobookName = db.StringField(unique = True, max_length = 100, required = True)
+    audiobookAuthor = db.StringField(required = True, max_length = 100)
+    audiobookUpload = db.DateTimeField(default = datetime.now, required = True)
+    audiobookNarrator = db.StringField(required = True, max_length = 100)
+    audiobookDuration = db.IntField(min_value = 0, required = True)
 
-    def json(self):
-        audiobook_dict = {
-                            "Id": self.Id,
-                            "audiobookName": self.audiobookName,
-                            "audiobookAuthor": self.audiobookAuthor,
-                            "audiobookUpload": self.audiobookUpload,
-                            "audiobookNarrator" : self.audiobookNarrator,
-                            "audiobookDuration" : self.audiobookDuration
-                          }
-        return json.dumps(audiobook_dict)
-    
-    meta = {
-            "indexes": ["Id"],
-            "ordering" :["-date_created"]
-            }
+
 
 ######################################
 ## Define route to create database and added the data to the database.
 @app.route('/audiometa', methods=['POST'])
 def create_audiometa():
-    Datetime=datetime.now()
     try:
         _json = request.json
         if _json['audioFileType'] in audiotypeList:
@@ -175,7 +132,6 @@ def delete_audiometa(audioFileType,audioFileID = None):
 # Update data from database
 @app.route('/<audioFileType>/<audioFileID>', methods=['PUT'])
 def dpdate_audiometa(audioFileType,audioFileID = None):
-    Datetime=datetime.now()
     try:
         _json = request.json
         print(_json)
