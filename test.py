@@ -33,10 +33,6 @@ class BasicTests(unittest.TestCase):
 ###############
 #### tests ####
 ###############
- 
-    def test_main(self):
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
 
 #################################################################
 ################       CREATE          ##########################
